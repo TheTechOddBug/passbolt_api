@@ -174,11 +174,17 @@ class MfaUserSettingsDisableCommand extends PassboltCommand
      */
     private function getUserWithLocaleAndMfaIsEnabledInfo(string $username): User
     {
+        $users = $this->UsersTable->findByUsernameCaseAware($username)->all()->toArray();
+        if (empty($users)) {
+            throw new RecordNotFoundException(__('No user matching the username "{0}" was found.', $username));
+        }
+
         $findUserQuery = $this->UsersTable->find()
+            ->where(['Users.id' => $users[0]->id])
             ->select(['Users.role_id','Users.username', 'Roles.name'])
             ->contain(['MfaSettings', 'Roles'])
             ->contain(['Profiles' => AvatarsTable::addContainAvatar()])
-            ->where([ 'Users.username' => $username])->find('locale');
+            ->find('locale');
 
         $mfaQ = (new IsMfaEnabledQueryService());
         $simulatedUuid = UuidFactory::uuid(); // need the uuid to be set because decorateForView will verify it
