@@ -418,7 +418,7 @@ trait UsersFindersTrait
 
         // show active first and do not count deleted ones
         return $this->findByUsernameCaseAware($username)
-            ->where(['deleted' => false])
+            ->where([$this->aliasField('deleted') => false])
             ->contain([
                 'Roles',
                 'Profiles' => AvatarsTable::addContainAvatar(),
@@ -478,7 +478,7 @@ trait UsersFindersTrait
             ->find()
             // MAX() here is just to make MySQL happy without that query breaks in MySQL(especially in 5.7)
             ->select(['lower_username' => 'MAX(LOWER(Users.username))'])
-            ->where(['deleted' => false])
+            ->where([$this->aliasField('deleted') => false])
             ->groupBy('LOWER(Users.username)')
             ->having('count(*) > 1');
 
@@ -487,7 +487,7 @@ trait UsersFindersTrait
             ->select(['id', 'username'])
             ->where([
                 'LOWER(username) IN' => $subQueryOfLowerCasedUsernameDuplicates,
-                'deleted' => false,
+                $this->aliasField('deleted') => false,
             ])
             ->orderByAsc('LOWER(username)');
     }
@@ -677,8 +677,8 @@ trait UsersFindersTrait
     public function findActiveNotDeleted(SelectQuery $query): SelectQuery
     {
         return $query->where([
-            $this->aliasField('active') => true,
-            $this->aliasField('deleted') => false,
+            $this->aliasField($this->aliasField('active')) => true,
+            $this->aliasField($this->aliasField('deleted')) => false,
         ]);
     }
 
