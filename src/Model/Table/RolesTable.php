@@ -25,6 +25,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
+use Passbolt\Rbacs\Model\Rule\HasNoActiveUserAssociatedRule;
 
 /**
  * Roles Model
@@ -121,6 +122,10 @@ class RolesTable extends Table
         $rules->add(new MaximumNumberOfRolesAllowedRule(), 'maximumNumberOfRolesAllowed', [
             'errorField' => 'name',
             'message' => __('Only maximum of {0} active roles are allowed.', self::MAXIMUM_NO_OF_ROLES_ALLOWED),
+        ]);
+        $rules->add(new HasNoActiveUserAssociatedRule(), 'hasNoActiveUserAssociatedRule', [
+            'errorField' => 'id',
+            'message' => __('The role cannot be deleted as it is associated with another user.'),
         ]);
 
         return $rules;
