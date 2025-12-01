@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Model\Entity\Role;
+use App\Model\Rule\IsUniqueCaseInsensitive;
 use App\Model\Rule\Role\MaximumNumberOfRolesAllowedRule;
 use Cake\Database\Expression\IdentifierExpression;
 use Cake\Database\Expression\QueryExpression;
@@ -118,8 +119,13 @@ class RolesTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->isUnique(['name'], __('A role already exists for the given name.')));
-        $rules->add(new MaximumNumberOfRolesAllowedRule(), 'maximumNumberOfRolesAllowed', [
+        $rules->add(new IsUniqueCaseInsensitive(), 'unique', [
+            'table' => 'Roles',
+            'errorField' => 'name',
+            'checkDirty' => true,
+            'message' => __('A role already exists for the given name.'),
+        ]);
+        $rules->addCreate(new MaximumNumberOfRolesAllowedRule(), 'maximumNumberOfRolesAllowed', [
             'errorField' => 'name',
             'message' => __('Only maximum of {0} active roles are allowed.', self::MAXIMUM_NO_OF_ROLES_ALLOWED),
         ]);
