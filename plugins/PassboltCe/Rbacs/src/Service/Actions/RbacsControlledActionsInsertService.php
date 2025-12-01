@@ -21,7 +21,7 @@ use App\Utility\UuidFactory;
 use Cake\ORM\TableRegistry;
 use Passbolt\Rbacs\Model\Entity\Rbac;
 
-class RbacsContolledActionsInsertService
+class RbacsControlledActionsInsertService
 {
     /**
      * Available RBACS actions

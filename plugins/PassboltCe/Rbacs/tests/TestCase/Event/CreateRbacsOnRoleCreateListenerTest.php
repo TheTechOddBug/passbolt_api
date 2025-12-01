@@ -25,7 +25,7 @@ use Cake\Event\Event;
 use Passbolt\Log\Test\Factory\ActionFactory;
 use Passbolt\Rbacs\Event\CreateRbacsOnRoleCreateListener;
 use Passbolt\Rbacs\Model\Entity\UiAction;
-use Passbolt\Rbacs\Service\Actions\RbacsContolledActionsInsertService;
+use Passbolt\Rbacs\Service\Actions\RbacsControlledActionsInsertService;
 use Passbolt\Rbacs\Test\Factory\RbacFactory;
 use Passbolt\Rbacs\Test\Factory\UiActionFactory;
 
@@ -77,11 +77,11 @@ class CreateRbacsOnRoleCreateListenerTest extends AppTestCaseV5
             ->persist();
         RbacFactory::make(['role_id' => $userRoleId])
             ->user()
-            ->setAction(ActionFactory::make()->name(RbacsContolledActionsInsertService::NAME_GROUPS_ADD)->persist())
+            ->setAction(ActionFactory::make()->name(RbacsControlledActionsInsertService::NAME_GROUPS_ADD)->persist())
             ->persist();
         RbacFactory::make(['role_id' => $userRoleId])
             ->user()
-            ->setAction(ActionFactory::make()->name(RbacsContolledActionsInsertService::NAME_ACCOUNT_RECOVERY_REQUESTS_INDEX)->persist())
+            ->setAction(ActionFactory::make()->name(RbacsControlledActionsInsertService::NAME_ACCOUNT_RECOVERY_REQUESTS_INDEX)->persist())
             ->persist();
         // for admin
         $adminRoleId = RoleFactory::find()->where(['name' => Role::ADMIN])->firstOrFail()->get('id');
@@ -91,7 +91,7 @@ class CreateRbacsOnRoleCreateListenerTest extends AppTestCaseV5
             ->persist();
         RbacFactory::make(['role_id' => $adminRoleId])
             ->user()
-            ->setAction(ActionFactory::make()->name(RbacsContolledActionsInsertService::NAME_ACCOUNT_RECOVERY_RESPONSES_CREATE)->persist())
+            ->setAction(ActionFactory::make()->name(RbacsControlledActionsInsertService::NAME_ACCOUNT_RECOVERY_RESPONSES_CREATE)->persist())
             ->persist();
 
         // Mimic create

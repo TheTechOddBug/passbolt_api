@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 use Cake\Log\Log;
 use Migrations\AbstractMigration;
-use Passbolt\Rbacs\Service\Actions\RbacsContolledActionsInsertService;
+use Passbolt\Rbacs\Service\Actions\RbacsControlledActionsInsertService;
 
 class V580InsertRbacsControlledActions extends AbstractMigration
 {
@@ -31,7 +31,7 @@ class V580InsertRbacsControlledActions extends AbstractMigration
     public function change(): void
     {
         try {
-            (new RbacsContolledActionsInsertService())->insertRbacsControlledActions();
+            (new RbacsControlledActionsInsertService())->insertRbacsControlledActions();
         } catch (Throwable $e) {
             $msg = 'There was an error in V580InsertRbacsControlledActions.';
             $msg .= ' ' . $e->getMessage();

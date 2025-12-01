@@ -19,16 +19,16 @@ namespace Passbolt\Rbacs\Test\TestCase\Service\Actions;
 
 use App\Utility\UuidFactory;
 use Passbolt\Log\Test\Factory\ActionFactory;
-use Passbolt\Rbacs\Service\Actions\RbacsContolledActionsInsertService;
+use Passbolt\Rbacs\Service\Actions\RbacsControlledActionsInsertService;
 use Passbolt\Rbacs\Test\Lib\RbacsTestCase;
 
 class RbacsControlledActionsInsertServiceTest extends RbacsTestCase
 {
     public function testRbacsControlledActionsInsertService_On_Empty_DB(): void
     {
-        $expectedActions = array_keys(RbacsContolledActionsInsertService::RBACS_CONTROLLED_ACTIONS);
+        $expectedActions = array_keys(RbacsControlledActionsInsertService::RBACS_CONTROLLED_ACTIONS);
 
-        $entities = (new RbacsContolledActionsInsertService())->insertRbacsControlledActions();
+        $entities = (new RbacsControlledActionsInsertService())->insertRbacsControlledActions();
         $this->assertSame(count($expectedActions), ActionFactory::count());
         $this->assertCount(count($expectedActions), $entities);
         foreach ($expectedActions as $action) {
@@ -41,14 +41,14 @@ class RbacsControlledActionsInsertServiceTest extends RbacsTestCase
 
     public function testRbacsControlledActionsInsertService_On_Non_Empty_DB(): void
     {
-        $expectedActions = array_keys(RbacsContolledActionsInsertService::RBACS_CONTROLLED_ACTIONS);
+        $expectedActions = array_keys(RbacsControlledActionsInsertService::RBACS_CONTROLLED_ACTIONS);
         $alreadyPersistedAction = array_pop($expectedActions);
         ActionFactory::make([
             'id' => UuidFactory::uuid($alreadyPersistedAction),
             'name' => $alreadyPersistedAction,
         ])->persist();
 
-        $entities = (new RbacsContolledActionsInsertService())->insertRbacsControlledActions();
+        $entities = (new RbacsControlledActionsInsertService())->insertRbacsControlledActions();
         $this->assertSame(count($expectedActions) + 1, ActionFactory::count());
         $this->assertCount(count($expectedActions), $entities);
         foreach ($expectedActions as $action) {
