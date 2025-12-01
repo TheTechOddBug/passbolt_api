@@ -19,6 +19,7 @@ namespace Passbolt\Rbacs;
 use Cake\Core\BasePlugin;
 use Cake\Core\PluginApplicationInterface;
 use Cake\ORM\TableRegistry;
+use Passbolt\Rbacs\Event\ClearRbacsOnRoleDeleteListener;
 use Passbolt\Rbacs\Event\CreateRbacsOnRoleCreateListener;
 
 class RbacsPlugin extends BasePlugin
@@ -44,7 +45,9 @@ class RbacsPlugin extends BasePlugin
     {
         $eventManager = $app->getEventManager();
 
-        $eventManager->on(new CreateRbacsOnRoleCreateListener());
+        $eventManager
+            ->on(new CreateRbacsOnRoleCreateListener())
+            ->on(new ClearRbacsOnRoleDeleteListener());
     }
 
     /**

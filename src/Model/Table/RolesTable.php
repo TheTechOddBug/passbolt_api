@@ -18,6 +18,8 @@ namespace App\Model\Table;
 
 use App\Model\Entity\Role;
 use App\Model\Rule\IsUniqueCaseInsensitive;
+use App\Model\Rule\Role\HasNoActiveUserAssociatedRule;
+use App\Model\Rule\Role\IsReservedRoleRule;
 use App\Model\Rule\Role\MaximumNumberOfRolesAllowedRule;
 use Cake\Database\Expression\IdentifierExpression;
 use Cake\Database\Expression\QueryExpression;
@@ -25,7 +27,6 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Passbolt\Rbacs\Model\Rule\HasNoActiveUserAssociatedRule;
 
 /**
  * Roles Model
@@ -51,7 +52,7 @@ class RolesTable extends Table
 {
     public const DEFAULT_ROLE_NAMES = [Role::GUEST, Role::USER, Role::ADMIN];
 
-    public const RESERVED_ROLE_NAMES = [Role::GUEST, Role::USER, Role::ADMIN, 'root'];
+    public const RESERVED_ROLE_NAMES = [Role::GUEST, Role::USER, Role::ADMIN, Role::ROOT];
 
     public const MAXIMUM_NO_OF_ROLES_ALLOWED = 5;
 
@@ -131,6 +132,10 @@ class RolesTable extends Table
         $rules->add(new HasNoActiveUserAssociatedRule(), 'hasNoActiveUserAssociatedRule', [
             'errorField' => 'id',
             'message' => __('The role cannot be deleted as it is associated with another user.'),
+        ]);
+        $rules->add(new IsReservedRoleRule(), 'isReservedRole', [
+            'errorField' => 'name',
+            'message' => __('A reserved role cannot be deleted.'),
         ]);
 
         return $rules;
