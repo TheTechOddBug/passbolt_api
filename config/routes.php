@@ -219,6 +219,10 @@ $routes->scope('/roles', function ($routes) {
 
     $routes->connect('/', ['prefix' => 'Roles', 'controller' => 'RolesAdd', 'action' => 'add'])
         ->setMethods(['POST']);
+
+    $routes->connect('/{roleId}', ['prefix' => 'Roles', 'controller' => 'RolesUpdate', 'action' => 'update'])
+        ->setPass(['roleId'])
+        ->setMethods(['PUT', 'POST']);
 });
 
 /**
