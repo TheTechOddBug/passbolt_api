@@ -223,6 +223,10 @@ $routes->scope('/roles', function ($routes) {
     $routes->connect('/{roleId}', ['prefix' => 'Roles', 'controller' => 'RolesUpdate', 'action' => 'update'])
         ->setPass(['roleId'])
         ->setMethods(['PUT', 'POST']);
+
+    $routes->connect('/{roleId}', ['prefix' => 'Roles', 'controller' => 'RolesDelete', 'action' => 'delete'])
+        ->setPass(['roleId'])
+        ->setMethods(['DELETE']);
 });
 
 /**

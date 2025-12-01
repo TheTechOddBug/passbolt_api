@@ -15,29 +15,22 @@ declare(strict_types=1);
  * @since         5.8.0
  */
 
-namespace Passbolt\Rbacs\Model\Rule;
+namespace App\Controller\Roles;
 
-use App\Model\Entity\Role;
-use Cake\ORM\TableRegistry;
+use App\Controller\AppController;
+use App\Service\Roles\RolesDeleteService;
 
-class HasNoActiveUserAssociatedRule
+class RolesDeleteController extends AppController
 {
     /**
-     * @param \App\Model\Entity\Role $role The role being deleted
-     * @param array $options Options passed to the check
-     * @return bool
+     * @param string $roleId Role identifier to delete.
+     * @return void
      */
-    public function __invoke(Role $role, array $options): bool
+    public function delete(string $roleId): void
     {
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
-        if (!$role->isDirty('deleted')) {
-            return true;
-        }
-
-        return !$UsersTable->exists([
-            'Users.role_id' => $role->id,
-            'Users.deleted' => false,
-        ]);
+        $this->assertJson();
+        $this->User->assertIsAdmin();
+        (new RolesDeleteService())->delete($this->User->getAccessControl(), $roleId);
+        $this->success(__('The role was deleted.'));
     }
 }
