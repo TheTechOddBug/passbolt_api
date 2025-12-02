@@ -119,16 +119,6 @@ class RolesTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add(new IsUniqueCaseInsensitive(), 'unique', [
-            'table' => 'Roles',
-            'errorField' => 'name',
-            'checkDirty' => true,
-            'message' => __('A role already exists for the given name.'),
-        ]);
-        $rules->addCreate(new MaximumNumberOfRolesAllowedRule(), 'maximumNumberOfRolesAllowed', [
-            'errorField' => 'name',
-            'message' => __('Only maximum of {0} active roles are allowed.', self::MAXIMUM_NO_OF_ROLES_ALLOWED),
-        ]);
         $rules->add(new HasNoActiveUserAssociatedRule(), 'hasNoActiveUserAssociatedRule', [
             'errorField' => 'id',
             'message' => __('The role cannot be deleted as it is associated with another user.'),
@@ -137,6 +127,22 @@ class RolesTable extends Table
             'errorField' => 'name',
             'message' => __('A reserved role cannot be deleted.'),
         ]);
+        $rules->add(new IsUniqueCaseInsensitive(), 'unique', [
+            'table' => 'Roles',
+            'errorField' => 'name',
+            'checkDirty' => true,
+            'message' => __('A role already exists for the given name.'),
+        ]);
+
+        $rules->addCreate(new MaximumNumberOfRolesAllowedRule(), 'maximumNumberOfRolesAllowed', [
+            'errorField' => 'name',
+            'message' => __('Only maximum of {0} active roles are allowed.', self::MAXIMUM_NO_OF_ROLES_ALLOWED),
+        ]);
+        $rules->addCreate($rules->existsIn('created_by', 'Users'), 'creator_exists', ['allowNullableNulls' => true]);
+        $rules->addCreate($rules->existsIn('modified_by', 'Users'), 'modifier_exists', ['allowNullableNulls' => true]);
+
+        $rules->addUpdate($rules->existsIn('modified_by', 'Users'), 'modifier_exists', ['allowNullableNulls' => true]);
+        $rules->addUpdate($rules->existsIn('deleted_by', 'Users'), 'remover_exists', ['allowNullableNulls' => true]);
 
         return $rules;
     }

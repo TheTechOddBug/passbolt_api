@@ -20,6 +20,7 @@ namespace Passbolt\Rbacs\Test\TestCase\Event;
 use App\Model\Entity\Role;
 use App\Service\Roles\RolesAddService;
 use App\Test\Factory\RoleFactory;
+use App\Test\Factory\UserFactory;
 use App\Test\Lib\AppTestCaseV5;
 use Cake\Event\Event;
 use Passbolt\Log\Test\Factory\ActionFactory;
@@ -63,7 +64,8 @@ class CreateRbacsOnRoleCreateListenerTest extends AppTestCaseV5
 
     public function testCreateRbacsOnRoleCreateListener(): void
     {
-        $uac = $this->mockAdminAccessControl();
+        $user = UserFactory::make()->admin()->persist();
+        $uac = $this->makeUac($user);
         // Populate Rbacs for testing
         // for user
         $userRoleId = RoleFactory::find()->where(['name' => Role::USER])->firstOrFail()->get('id');
