@@ -58,7 +58,8 @@ class RolesUpdateServiceTest extends AppTestCase
     public function testRolesUpdateService_Success(): void
     {
         $ada = UserFactory::make()->user()->persist();
-        $uac = $this->mockAdminAccessControl();
+        $admin = UserFactory::make()->admin()->persist();
+        $uac = $this->makeUac($admin);
 
         $role = RoleFactory::make([
             'created_by' => $ada->id,

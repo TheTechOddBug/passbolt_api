@@ -21,6 +21,7 @@ use App\Error\Exception\CustomValidationException;
 use App\Model\Table\RolesTable;
 use App\Service\Roles\RolesAddService;
 use App\Test\Factory\RoleFactory;
+use App\Test\Factory\UserFactory;
 use App\Test\Lib\AppTestCase;
 use Cake\I18n\DateTime;
 use Cake\Utility\Hash;
@@ -57,7 +58,8 @@ class RolesAddServiceTest extends AppTestCase
 
     public function testRolesAddService_Success(): void
     {
-        $uac = $this->mockAdminAccessControl();
+        $admin = UserFactory::make()->admin()->persist();
+        $uac = $this->makeUac($admin);
         $result = $this->service->add($uac, ['name' => 'marketing']);
         $this->assertTrue(Validation::uuid($result->id));
         $this->assertSame('marketing', $result->name);

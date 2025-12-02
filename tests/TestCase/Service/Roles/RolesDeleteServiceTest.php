@@ -57,8 +57,9 @@ class RolesDeleteServiceTest extends AppTestCase
     public function testRolesDeleteService_Success(): void
     {
         $role = RoleFactory::make()->persist();
+        $admin = UserFactory::make()->admin()->persist();
+        $uac = $this->makeUac($admin);
 
-        $uac = $this->mockAdminAccessControl();
         $this->service->delete($uac, $role->id);
 
         /** @var \App\Model\Entity\Role $roleUpdated */
