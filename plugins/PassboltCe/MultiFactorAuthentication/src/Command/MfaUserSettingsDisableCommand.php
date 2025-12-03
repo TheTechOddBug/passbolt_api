@@ -174,13 +174,7 @@ class MfaUserSettingsDisableCommand extends PassboltCommand
      */
     private function getUserWithLocaleAndMfaIsEnabledInfo(string $username): User
     {
-        $users = $this->UsersTable->findByUsernameCaseAware($username)->all()->toArray();
-        if (empty($users)) {
-            throw new RecordNotFoundException(__('No user matching the username "{0}" was found.', $username));
-        }
-
-        $findUserQuery = $this->UsersTable->find()
-            ->where(['Users.id' => $users[0]->id])
+        $findUserQuery = $this->UsersTable->findByUsernameCaseAware($username)
             ->select(['Users.role_id','Users.username', 'Roles.name'])
             ->contain(['MfaSettings', 'Roles'])
             ->contain(['Profiles' => AvatarsTable::addContainAvatar()])
@@ -194,6 +188,12 @@ class MfaUserSettingsDisableCommand extends PassboltCommand
             $simulatedUuid
         );
 
-        return $findUserQuery->firstOrFail();
+        $user = $findUserQuery->all()->first();
+
+        if (empty($user)) {
+            throw new RecordNotFoundException(__('No user matching the username "{0}" was found.', $username));
+        }
+
+        return $user;
     }
 }

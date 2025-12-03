@@ -179,8 +179,9 @@ class MfaUserSettingsDisableCommandTest extends AppTestCase
 
         $this->assertOutputContains('has been disabled');
 
-        // an email should be in the queue
+        // an email should be in the queue and not be the lower case user
         $this->assertEmailQueueCount(1);
+        $this->assertEmailInBatchNotContains($userLower->get('username'));
         $this->assertEmailInBatchContains(['Your multi-factor authentication settings were reset by you', ], $userUpper->get('username'));
     }
 
