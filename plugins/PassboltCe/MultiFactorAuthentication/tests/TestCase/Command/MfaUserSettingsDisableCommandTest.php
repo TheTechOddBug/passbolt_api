@@ -153,7 +153,7 @@ class MfaUserSettingsDisableCommandTest extends AppTestCase
         // MFA org settings
         $orgSettings = ['providers' => [MfaSettings::PROVIDER_TOTP => true]];
         $this->mockMfaOrgSettings($orgSettings, 'configure');
-        $accountSettings = [
+        $accountSettingsUpper = [
             MfaSettings::PROVIDERS => [
                 MfaSettings::PROVIDER_TOTP,
             ],
@@ -168,10 +168,27 @@ class MfaUserSettingsDisableCommandTest extends AppTestCase
                 ),
             ],
         ];
-        $data = json_encode($accountSettings);
+        $accountSettingsLower = [
+            MfaSettings::PROVIDERS => [
+                MfaSettings::PROVIDER_TOTP,
+            ],
+            MfaSettings::PROVIDER_TOTP => [
+                MfaAccountSettings::VERIFIED => DateTime::now(),
+                MfaAccountSettings::OTP_PROVISIONING_URI => MfaOtpFactory::generateTOTP(
+                    new UserAccessControl(
+                        $userLower->get('role')->get('name'),
+                        $userLower->get('id'),
+                        $userLower->get('username'),
+                    )
+                ),
+            ],
+        ];
+        $dataUpper = json_encode($accountSettingsUpper);
+        $dataLower = json_encode($accountSettingsLower);
         /** @var \Passbolt\AccountSettings\Model\Table\AccountSettingsTable $AccountSettings */
         $AccountSettings = TableRegistry::getTableLocator()->get('Passbolt/AccountSettings.AccountSettings');
-        $AccountSettings->createOrUpdateSetting($userUpper->get('id'), MfaSettings::MFA, $data);
+        $AccountSettings->createOrUpdateSetting($userUpper->get('id'), MfaSettings::MFA, $dataUpper);
+        $AccountSettings->createOrUpdateSetting($userLower->get('id'), MfaSettings::MFA, $dataLower);
 
         $options = " --user-username $userUpper->username";
         $this->exec('passbolt mfa_user_settings_disable' . $options);
@@ -179,10 +196,12 @@ class MfaUserSettingsDisableCommandTest extends AppTestCase
 
         $this->assertOutputContains('has been disabled');
 
-        // an email should be in the queue and not be the lower case user
-        $this->assertEmailQueueCount(1);
-        $this->assertEmailInBatchNotContains($userLower->get('username'));
-        $this->assertEmailInBatchContains(['Your multi-factor authentication settings were reset by you', ], $userUpper->get('username'));
+        // Assert that upper user is disabled and lower is not in the DB
+        $upperMfa = $AccountSettings->getByProperty($userUpper->get('id'), MfaSettings::MFA);
+        $this->assertNull($upperMfa, 'Expected the MFA settings to be deleted for the upper-case user.');
+
+        $lowerMfa = $AccountSettings->getByProperty($userLower->get('id'), MfaSettings::MFA);
+        $this->assertNotNull($lowerMfa, 'Expected the MFA settings to not be deleted for the lower-case user.');
     }
 
     /**
